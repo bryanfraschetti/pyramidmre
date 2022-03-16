@@ -1,0 +1,5 @@
+[console_scripts]
+initialize_pyramidmre_db = pyramidmre.scripts.initialize_db:main
+
+[paste.app_factory]
+main = pyramidmre:main

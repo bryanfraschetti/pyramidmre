@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Quickdraw Tarps Dealer Login</title>
+        <link rel="stylesheet" type="text/css" href="{{request.static_url('pyramidmre:static/css/login_en.css')}}">
+    </head>
+    <body>
+        <div class="loginbox">
+            <h1>Log in</h1><br/>
+            <form action="{{ url }}" method="post">
+                <p>Username</p>
+                <input type="text" name="login" id="username" placeholder="Enter Username" value="{{ login }}">
+                <p>Password</p>
+                <input type="password" name="password" id="password" placeholder="Enter Password"><br/><br/>
+                <div>
+                    <button type="submit" id="submit-button">Login</button>
+                </div>
+                <span id="login-error-msg-holder">
+                    <p id="login-error-msg">{{ message }}</p>
+                </span>
+            </form>
+        </div>
+    </body>
+
+</html>

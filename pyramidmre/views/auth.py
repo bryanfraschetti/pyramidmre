@@ -1,8 +1,8 @@
-from pyramid.csrf import new_csrf_token
 from pyramid.httpexceptions import (
     HTTPSeeOther,
-    HTTPFound,
+    HTTPForbidden,
 )
+
 from pyramid.security import (
     remember,
     forget,
@@ -14,39 +14,39 @@ from pyramid.view import (
 
 from .. import models
 
-
-@view_config(route_name='login_en', renderer='pyramidmre:templates/login-en.jinja2')
-def login(request):
-    next_url = request.route_url('main_en')
+@view_config(route_name='main_en', renderer='pyramidmre:templates/main-en.jinja2')
+def main_en(request):
+    print("in main")
+    print(request.__dir__())
+    print(request.is_authenticated)
+    print("Identity of user: ")
+    print(request.authenticated_userid)
+    userid=request.authenticated_userid
+    if userid is None:
+        raise HTTPForbidden
     message = ''
-    login = ''
-    if(request.method == 'POST'):
-        login = request.params['login'] #This is the html element for the username
-        password = request.params['password'] #Password
-        user = (
-            request.dbsession.query(models.CustomerUsers)
-            .filter_by(USERNAME_EMAIL=login)
-            .first() #Find user in db
-        )
-        if user is not None and user.check_password(password): #If user is in db
-            headers = remember(request, user.USER_ID) #remember them
-            return HTTPFound(location=next_url, headers=headers) #redirect them
-        message = 'Failed login' #bad credentials
-        request.response.status = 400
+    return dict(message=message)
 
-    return dict(
-        message=message,
-        url=request.route_url('login_en'),
-        next_url=next_url,
-        login=login,
-    )
+@forbidden_view_config(renderer='pyramidmre:templates/403.jinja2')
+def forbidden_view(exc, request):
+#    if not request.is_authenticated:
+ #       next_url = request.route_url('login_en', _query={'next': request.url})
+  #      return HTTPSeeOther(location=next_url)
 
-# @view_config(route_name='logout')
-# def logout(request):
-#     next_url = request.route_url('login_en')
-#     if request.method == 'POST':
-#         headers = forget(request)
-#         return HTTPSeeOther(location=next_url, headers=headers)
+    request.response.status = 403
+    return {}
 
-#     return HTTPSeeOther(location=next_url)
+db_err_msg = """\
+Pyramid is having a problem using your SQL database.  The problem
+might be caused by one of the following things:
 
+1.  You may need to initialize your database tables with `alembic`.
+    Check your README.txt for descriptions and try to run it.
+
+2.  Your database server may not be running.  Check that the
+    database server referred to by the "sqlalchemy.url" setting in
+    your "development.ini" file is running.
+
+After you fix the problem, please restart the Pyramid application to
+try it again.
+"""
